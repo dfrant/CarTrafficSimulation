@@ -134,11 +134,9 @@ public class Model extends PApplet{
             time = millis();
         }
     }
-
     public static void main(String[] args){
         PApplet.main("Model");
     }
-
     private static int getRnd(int min, int max){
         max -= min;
         return (int)(Math.random() * ++max) + min;
