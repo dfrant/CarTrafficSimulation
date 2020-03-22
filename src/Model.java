@@ -12,7 +12,7 @@ public class Model extends PApplet{
     public int valueReducingSpeed, timeReducingSpeed;
 
     int rndSpeed, rndIntervalNumber;
-    float intervalCounter = 0;
+    float intervalCounter;
 
     int parametersNumber = 6;
     int parametersCounter = 0;
@@ -27,7 +27,7 @@ public class Model extends PApplet{
         time = 0;
     }
     public void draw(){
-        background(100);
+        background(167);
         if(interf.clicked[0] && !start){
             minSpeed = interf.getAnswer();
             parametersCounter ++;
@@ -63,7 +63,8 @@ public class Model extends PApplet{
         if (interf.clicked[6] && !start){
             rndSpeed = getRnd(minSpeed,maxSpeed);
             rndIntervalNumber = getRnd(minInterval, maxInterval);
-            manager.cars.addFirst(new Car(this, 0, 200, rndSpeed));
+            intervalCounter = rndIntervalNumber;
+            manager.cars.addFirst(new Car(this, 0, 180, rndSpeed));
             interf.clicked[6] = false;
             start = true;
         }
@@ -74,63 +75,49 @@ public class Model extends PApplet{
             else
                 dt = (millis() - time) / 1000;
             if (!manager.cars.isEmpty()) {
-                for (int i = 0; i < manager.cars.size(); i++) {
-                    int res = 1;
-                    if (i > 0) {
-                        res = manager.updateSpeeds(i - 1, i, dt);
-                    }
-                    //manager.cars.get(i).check(this, valueReducingSpeed, timeReducingSpeed);
-                    if (res != -1) {
-                        if (res == 0) {
-                            manager.cars.get(i).setAccidentHappened(true);
-                            manager.cars.get(i - 1).setAccidentHappened(true);
-                        }
-                        manager.cars.get(i).move(dt);
-                    }
+                for (int i = 0; i <manager.cars.size(); i++) { // order
+                    manager.updateSpeeds(i - 1, i, dt);
+                    manager.cars.get(i).check(this, valueReducingSpeed, timeReducingSpeed);
+                    manager.cars.get(i).move(dt);
                     manager.cars.get(i).display(this);
-                    if (res != -1) {
-                        if (manager.cars.get(i).getAccidentHappened()) {
-                            if (manager.cars.get(i).getInitialSpeed() == 0)
-                                manager.cars.get(i).setAcceleration(0);
-                            if (Math.floor(manager.cars.get(i).timeInAccident) >= timeReducingSpeed) {
-                                if ((i > 0 && (manager.cars.get(i - 1).getCoordX() - manager.cars.get(i).getCoordX() - manager.cars.get(i).getLength() > 3 * manager.cars.get(i).getLength())) || (i == 0)) {
-                                    manager.cars.get(i).increaseSpeed = true;
-                                } else {
-                                    manager.cars.get(i).increaseSpeed = false;
-                                }
-                                manager.cars.get(i).timeInAccident = 0;
+
+                    if (manager.cars.get(i).getAccidentHappened()) {
+                        if (manager.cars.get(i).getCurrentSpeed() == 0) //initialSpeed
+                            manager.cars.get(i).setAcceleration(0);
+                        if (Math.floor(manager.cars.get(i).timeInAccident) >= timeReducingSpeed) {
+                            if ((i==0)||(i > 0 && (manager.cars.get(i - 1).getCoordX() - manager.cars.get(i).getCoordX() - manager.cars.get(i).getLength() > 3 * manager.cars.get(i).getLength()))) {
+                                manager.cars.get(i).increaseSpeed = true;
                                 manager.cars.get(i).setAccidentHappened(false);
-                            }
-                            manager.cars.get(i).timeInAccident += dt;
-                        }
-                        if ((i > 0 && (manager.cars.get(i - 1).getCoordX() - manager.cars.get(i).getCoordX() - manager.cars.get(i).getLength() > 3 * manager.cars.get(i).getLength())) || (i == 0)) {
-                            if (manager.cars.get(i).increaseSpeed) {
-                                float acl = manager.getBrakeLow() * (-1);
-                                manager.cars.get(i).increaseSpeed(acl, dt);
-                                manager.cars.get(i).color = Color.magenta;
-                                if (manager.cars.get(i).getAcceleration() == 0) {
-                                    manager.cars.get(i).increaseSpeed = false;
-                                    manager.cars.get(i).color = Color.green;
-                                }
+                                manager.cars.get(i).timeInAccident = 0;
+                            } else {
+                                manager.cars.get(i).increaseSpeed = false;
                             }
                         }
+                        manager.cars.get(i).timeInAccident += dt;
+                    }
+                    if (manager.cars.get(i).inDelay){
+                        if (Math.floor(manager.cars.get(i).timeInDelay) >= manager.cars.get(i).actualTimeReducingSpeed){
+                            manager.cars.get(i).timeInDelay = 0;
+                            manager.cars.get(i).actualTimeReducingSpeed = 0;
+                            manager.cars.get(i).inDelay = false;
+                        }
+                        manager.cars.get(i).timeInDelay += dt;
                     }
                 }
-                if (manager.cars.get(0).getCoordX() >= width) {
-                    manager.cars.remove(0);
-                }
+//                if (manager.cars.get(0).getCoordX() >= width) {
+//                    manager.cars.remove(0);
+//                }
             }
-            intervalCounter += dt;
-            if (Math.floor(intervalCounter) == rndIntervalNumber) {
+            if (intervalCounter<=0 && ((manager.cars.getLast().getCoordX()+manager.cars.getLast().getLength()-200>3*manager.cars.getLast().getLength()) || manager.cars.isEmpty())) {
                 if (!manager.cars.isEmpty())
                     //manager.cars.add(new Car(this, manager.cars.size(), manager.cars.getLast().initialCoord - 4*manager.cars.getLast().getLength(), getRnd(minSpeed, maxSpeed)));
-                    manager.cars.add(new Car(this, manager.cars.size(), manager.cars.getLast().initialCoord - 4 * manager.cars.getLast().getLength(), rndSpeed * 5)); //only 2 cars will be created
+                    manager.cars.add(new Car(this, manager.cars.size(), 180, rndSpeed * 5)); //only 2 cars will be created
                 else
-                    manager.cars.add(new Car(this, 0, 200, rndSpeed));
+                    manager.cars.add(new Car(this, 0, 180, rndSpeed));
                 //intervalCounter = 0;
-                intervalCounter += 2;
-                rndIntervalNumber = getRnd(minInterval, maxInterval);
+                intervalCounter = getRnd(minInterval, maxInterval);
             }
+            intervalCounter -= dt;
             time = millis();
         }
     }

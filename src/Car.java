@@ -99,10 +99,20 @@ public class Car {
     public void display(PApplet obj) {
         obj.fill(color.getRGB());
         obj.rect(getCoordX(), getCoordY(), getLength(), getHeight());
+        obj.fill(0);
+        obj.line(getCoordX(),getCoordY()-20,getCoordX(),getCoordY()+20);
+        obj.line(getCoordX()+20,getCoordY()-20,getCoordX()+20,getCoordY()+20);
+        obj.text(getId(),getCoordX()+getLength()/2, getCoordY()+getLength()/2);
     }
     public void move(float dt){
         if (getCurrentSpeed() + getAcceleration() * dt >= 0) {
-            if (!getAccidentHappened()) {
+            if (getAccidentHappened() && inDelay) {
+                color = Color.orange;
+            }else if (getAccidentHappened()){
+                color = Color.red;
+            }else if (inDelay) {
+                color = Color.yellow;
+            }else{
                 if (getCurrentSpeed() + getAcceleration() * dt > getCurrentSpeed()) {
                     color = Color.magenta;
                 }else if (getCurrentSpeed() + getAcceleration() * dt == getCurrentSpeed()) {
@@ -110,8 +120,6 @@ public class Car {
                 }else if (getCurrentSpeed() + getAcceleration() * dt < getCurrentSpeed()) {
                     color = Color.blue;
                 }
-            }else{
-                color = Color.red;
             }
             setCurrentSpeed(getCurrentSpeed() + getAcceleration() * dt);
         }else {
@@ -131,7 +139,7 @@ public class Car {
                 }else {
                     setCurrentSpeed(0);
                 }
-                color = Color.blue;
+                color = Color.yellow;
                 setAcceleration(0);
                 clicked = true;
                 inDelay = true;
@@ -144,6 +152,7 @@ public class Car {
         if (getCurrentSpeed() + acceleration*dt >= speedFront){
             setAcceleration(acceleration);
         }else{
+            setCurrentSpeed(speedFront);
             setAcceleration(0);
         }
     }
@@ -151,6 +160,7 @@ public class Car {
         if (getCurrentSpeed() + acceleration*dt < getInitialSpeed()) {
             setAcceleration(acceleration);
         }else {
+            setCurrentSpeed(getInitialSpeed());
             setAcceleration(0);
         }
     }
