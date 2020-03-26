@@ -1,8 +1,9 @@
 import g4p_controls.*;
 import processing.core.PApplet;
 
+import javax.swing.JOptionPane;
+
 public class Interface {
-    private GButton[] btnOK;
     private GButton btnStart;
     private GButton btnPause;
     private GButton btnRun;
@@ -12,9 +13,6 @@ public class Interface {
     private GPanel pnlInfo;
     private GTextField[] textField;
     private GLabel[] label;
-    private int answer;
-    boolean allParameters = false;
-    boolean[] clicked;
     private float pnlWidth;
     private float pnlHeight;
     private float pnlInfoWidth;
@@ -32,135 +30,163 @@ public class Interface {
     public Interface(PApplet obj, int parametersNumber, float lengthCar) {
 
         G4P.setCtrlMode(GControlMode.CORNER);
-        btnOK = new GButton[parametersNumber];
         textField = new GTextField[parametersNumber];
         label = new GLabel[parametersNumber];
-        int allButtonsNumber = parametersNumber + 4;
-        clicked = new boolean[allButtonsNumber];
 
-        pnlWidth = (float)obj.width/5;
+        pnlWidth = (float) obj.width / 5;
         pnlHeight = obj.height;
-        elemWidth = 3*pnlWidth/4;
-        elemHeight = 20;
         gapX = 10;
         gapY = 40;
+        elemWidth = pnlWidth - 2*gapX;
+        elemHeight = 20;
 
         roadX = pnlWidth;
-        roadY = pnlHeight/2 - lengthCar;
+        roadY = pnlHeight / 2 - lengthCar;
 
         pnl = new GPanel(obj, 0, 0, pnlWidth, pnlHeight, "parameters");
         pnl.setCollapsible(false);
         pnl.setDraggable(false);
-        for(int i = 0; i < textField.length; i++) {
-            textField[i] = new GTextField(obj, gapX, gapY + (i*gapY), elemWidth, elemHeight);
+        for (int i = 0; i < textField.length; i++) {
+            textField[i] = new GTextField(obj, gapX, gapY + (i * gapY), elemWidth, elemHeight);
             textField[i].setTextEditEnabled(true);
             pnl.addControl(textField[i]);
         }
-        for (int i = 0; i < btnOK.length; i++) {
-            clicked[i] = false;
-            btnOK[i] = new GButton(obj, gapX + elemWidth , gapY + (i*gapY), pnlWidth - elemWidth - 2*gapX, elemHeight, "OK");
-            pnl.addControl(btnOK[i]);
-            btnOK[i].addEventHandler(this, "buttonHandler");
-        }
+
         int j = 0;
-        btnStart = new GButton(obj, gapX, gapY + (btnOK.length + j)* gapY, pnlWidth - 2*gapX, elemHeight, "start the simulation");
+        btnStart = new GButton(obj, gapX, gapY + (textField.length + j) * gapY, pnlWidth - 2 * gapX, elemHeight, "start the simulation");
         btnStart.addEventHandler(this, "buttonHandler");
         pnl.addControl(btnStart);
         btnStart.setEnabled(true);
         j++;
-        btnPause = new GButton(obj, gapX, gapY + (btnOK.length + j) * gapY, pnlWidth - 2*gapX, elemHeight, "pause");
+        btnPause = new GButton(obj, gapX, gapY + (textField.length + j) * gapY, pnlWidth - 2 * gapX, elemHeight, "pause");
         btnPause.addEventHandler(this, "buttonHandler");
         pnl.addControl(btnPause);
         btnPause.setEnabled(false);
         j++;
-        btnRun = new GButton(obj, gapX, gapY + (btnOK.length + j) * gapY,pnlWidth - 2*gapX, elemHeight, "restart");
+        btnRun = new GButton(obj, gapX, gapY + (textField.length + j) * gapY, pnlWidth - 2 * gapX, elemHeight, "resume");
         btnRun.addEventHandler(this, "buttonHandler");
         pnl.addControl(btnRun);
         btnRun.setEnabled(false);
         j++;
-        btnRestart = new GButton(obj, gapX, gapY + (btnOK.length + j) * gapY, pnlWidth - 2*gapX, elemHeight, "restart all");
+        btnRestart = new GButton(obj, gapX, gapY + (textField.length + j) * gapY, pnlWidth - 2 * gapX, elemHeight, "restart all");
         btnRestart.addEventHandler(this, "buttonHandler");
         pnl.addControl(btnRestart);
         btnRestart.setEnabled(false);
         j++;
-        btnExit = new GButton(obj, gapX, gapY + (btnOK.length + j) * gapY, pnlWidth - 2*gapX, elemHeight, "exit");
+        btnExit = new GButton(obj, gapX, gapY + (textField.length + j) * gapY, pnlWidth - 2 * gapX, elemHeight, "exit");
         btnExit.addEventHandler(this, "buttonHandler");
         pnl.addControl(btnExit);
         for (int i = 0; i < label.length; i++) {
-            label[i] = new GLabel(obj, (float)gapX/2, (-1)*gapX + (i*gapY), pnlWidth, pnlHeight/((float)gapX/2) -2*gapX);
+            label[i] = new GLabel(obj, (float) gapX / 2, (-1) * gapX + (i * gapY), pnlWidth, pnlHeight / ((float) gapX / 2) - 2 * gapX);
             label[i].setLocalColorScheme(G4P.CYAN_SCHEME);
             pnl.addControl(label[i]);
         }
-        label[label.length - 6].setText("минимальная скорость");
-        label[label.length - 5].setText("максимальная скорость");
-        label[label.length - 4].setText("минимальный интервал");
-        label[label.length - 3].setText("максимальный интервал");
-        label[label.length - 2].setText("dv уменьшения скорости");
-        label[label.length - 1].setText("dt движения с меньшей скоростью");
+        label[label.length - 6].setText("0)минимальная скорость");
+        label[label.length - 5].setText("1)максимальная скорость");
+        label[label.length - 4].setText("2)минимальный интервал появления");
+        label[label.length - 3].setText("3)максимальный интервал появления");
+        label[label.length - 2].setText("4)dv уменьшения скорости");
+        label[label.length - 1].setText("5)dt движения с меньшей скоростью");
 
-        pnlInfoWidth = (float)(pnlWidth * (1.5));
-        pnlInfoHeight = pnlHeight/4;
+        pnlInfoWidth = (float) (pnlWidth * (1.5));
+        pnlInfoHeight = pnlHeight / 4;
         pnlInfo = new GPanel(obj, pnlWidth + gapX, 0, pnlInfoWidth, pnlInfoHeight, "information");
         pnlInfo.setCollapsible(false);
         pnlInfo.setDraggable(false);
 
-        GLabel labelInfo = new GLabel(obj, (float)gapX/2, gapX, pnlInfoWidth, pnlInfoHeight);
+        GLabel labelInfo = new GLabel(obj, (float) gapX / 2, gapX, pnlInfoWidth, pnlInfoHeight);
         labelInfo.setLocalColorScheme(G4P.CYAN_SCHEME);
-        labelInfo.setText("параметры - целые,положительные\n" + "зеленый - постоянная скорость\n" + "синий - торможение\n" + "розовый - ускорение\n"+"красный - авария\n"+"желтый - задержка по щелчку мыши\n"+"оранжевый - задерка и авария\n");
+        labelInfo.setText("параметры - целые,положительные\n" + "зеленый - постоянная скорость\n" + "синий - торможение\n" + "розовый - ускорение\n" + "красный - авария\n" + "желтый - задержка по щелчку мыши\n" + "оранжевый - задерка и авария\n");
         pnlInfo.addControl(labelInfo);
     }
 
-    public void buttonHandler(GButton button, GEvent event){ //reacts to pressing certain buttons
-        int i;
-        for (i = 0; i < btnOK.length; i++)
-            if (button == btnOK[i] && event == GEvent.CLICKED){
-                textField[i].setTextEditEnabled(false);
-                clicked[i] = true;
-                setAnswer(Integer.parseInt(textField[i].getText()));
+    public void buttonHandler(GButton button, GEvent event) { //reacts to pressing certain buttons
+        if (button == btnStart && event == GEvent.CLICKED) {
+            String answer;
+            int[] answerNumber = new int[textField.length];
+            Model.setParametersCounter(0);
+            for (int j = 0; j < textField.length; j++) {
+                answer = textField[j].getText();
+                try {
+                    answerNumber[j] = Integer.parseInt(answer);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Некорректный ввод параметра " + j + "\nПараметры должны быть целыми и положительными числами", "", JOptionPane.ERROR_MESSAGE);
+                    textField[j].setText("");
+                    return;
+                }
+                if (answerNumber[j] > 0) {
+                    Model.setParametersCounter(Model.getParametersCounter() + 1);
+                }else{
+                    JOptionPane.showMessageDialog(null, "Некорректный ввод параметра " + j + "\nПараметры должны быть целыми и положительными числами", "", JOptionPane.ERROR_MESSAGE);
+                    textField[j].setText("");
+                    return;
+                }
             }
-        if (button == btnStart && event == GEvent.CLICKED && allParameters){
-            clicked[i] = true;
-            btnStart.setEnabled(false);
-            btnPause.setEnabled(true);
-            btnRestart.setEnabled(true);
+            if (Model.getParametersCounter() == Model.getParametersNumber()) {
+                Model.setMinSpeed(answerNumber[0]);
+                Model.setMaxSpeed(answerNumber[1]);
+                Model.setMinInterval(answerNumber[2]);
+                Model.setMaxInterval(answerNumber[3]);
+                Model.setValueReducingSpeed(answerNumber[4]);
+                Model.setTimeReducingSpeed(answerNumber[5]);
+                for (GTextField gTextField : textField) gTextField.setTextEditEnabled(false);
+                btnStart.setEnabled(false);
+                btnPause.setEnabled(true);
+                btnRestart.setEnabled(true);
+                Model.addFirstCar();
+                Model.setStart(true);
+            }
         }
-        i++;
-        if (button == btnPause && event == GEvent.CLICKED && allParameters){
-            clicked[i] = true;
+        if (button == btnPause && event == GEvent.CLICKED) {
             btnPause.setEnabled(false);
             btnRun.setEnabled(true);
             btnRestart.setEnabled(false);
+            Model.setStart(false);
         }
-        i++;
-        if (button == btnRun && event == GEvent.CLICKED && allParameters){
-            clicked[i] = true;
+        if (button == btnRun && event == GEvent.CLICKED) {
             btnRun.setEnabled(false);
             btnPause.setEnabled(true);
             btnRestart.setEnabled(true);
+            Model.setStart(true);
+            Model.setTime(0);
         }
-        i++;
-        if (button == btnRestart && event == GEvent.CLICKED && allParameters){
-            clicked[i] = true;
+        if (button == btnRestart && event == GEvent.CLICKED) {
+            Model.setTime(0);
+            Model.deleteCars();
+            Model.addFirstCar();
         }
-        if (button == btnExit && event == GEvent.CLICKED){
+        if (button == btnExit && event == GEvent.CLICKED) {
             System.exit(0);
         }
     }
 
-    public void drawRoad(PApplet obj, float lengthCar){ //displays the road
+    public void drawCar(PApplet obj, Car car){ //displays a car as a rectangle with given color
+        obj.fill(car.getColor().getRGB());
+        obj.rect(car.getCoordX(), car.getCoordY(), car.getLength(), car.getHeight());
+        obj.fill(0); //black color
+        obj.text(car.getId(), car.getCoordX() + car.getLength() / 2, car.getCoordY() + car.getLength() / 2);
+        obj.fill(255); //white color
+        obj.text(roundSpeedValueToString(car.getCurrentSpeed()), car.getCoordX(), car.getCoordY() - car.getLength() / 2, car.getCoordX(), car.getCoordY() + car.getHeight() / 2);
+        if (car.isInDelay()){
+            obj.fill(255); //white color
+            double time = Math.ceil(car.getActualTimeReducingSpeed());
+            if (time > 0) {
+                obj.text(String.valueOf(time), car.getCoordX(), car.getCoordY() + car.getLength(), car.getCoordX(), car.getCoordY() + car.getHeight() / 2);
+            }else{
+                obj.text(String.valueOf(0), car.getCoordX(), car.getCoordY() + car.getLength(), car.getCoordX(), car.getCoordY() + car.getHeight() / 2);
+            }
+        }
+    }
+    private String roundSpeedValueToString(float speed){
+        return String.valueOf(Math.round(speed * 100.0) / 100.0);
+    }
+    public void drawRoad(PApplet obj, float lengthCar) { //displays the road
         obj.background(backgroundColor);
         obj.fill(roadColor);
-        obj.rect(roadX, roadY,obj.width - pnlWidth,2*lengthCar);
+        obj.rect(roadX, roadY, obj.width - pnlWidth, 2 * lengthCar);
     }
 
     //getters and setters
-
-    public int getAnswer(){
-        return this.answer;
-    }
-    private void setAnswer(int answer) {
-        this.answer = answer;
-    }
 
     public float getPnlWidth() {
         return pnlWidth;
