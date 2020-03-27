@@ -56,7 +56,7 @@ public class Car {
             shiftCarForward(dt);
     }
 
-    public void check(boolean mousePressed,float mouseX,float mouseY, float dspeed, int timeReducingSpeed) { //checks whether the pushing of the mouse was on the car
+    public void check(boolean mousePressed, float mouseX, float mouseY, float dspeed, int timeReducingSpeed) { //checks whether the pushing of the mouse was on the car
         if (mousePressed && !isClicked()) {
             if (mouseX <= getCoordX() + getLength() && mouseX >= getCoordX() &&
                     mouseY <= getCoordY() + getHeight() && mouseY > getCoordY()) {
@@ -94,7 +94,7 @@ public class Car {
         }
     }
 
-    private void shiftCarForward (float dt){
+    private void shiftCarForward(float dt) {
         setCoordX(getCoordX() + getCurrentSpeed() * dt + getAcceleration() * dt * dt / 2);
     }
     //getters and setters

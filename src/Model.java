@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Model extends PApplet {
@@ -48,7 +49,7 @@ public class Model extends PApplet {
                     manager.updateSpeeds(i - 1, i, dt);
                     currentCar.check(this.mousePressed, this.mouseX, this.mouseY, valueReducingSpeed, timeReducingSpeed);
                     currentCar.move(dt);
-                    interf.drawCar(this,currentCar);
+                    interf.drawCar(this, currentCar);
 
                     if (currentCar.isAccidentHappened()) {
                         if (currentCar.getCurrentSpeed() == 0)
@@ -91,12 +92,13 @@ public class Model extends PApplet {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
-    public static void deleteCars(){
+    public static void deleteCars() {
         while (!manager.getCarsList().isEmpty()) {
             manager.getCarsList().removeLast();
         }
     }
-    public static void addFirstCar(){
+
+    public static void addFirstCar() {
         intervalCounter = getRnd(minInterval, maxInterval);
         manager.getCarsList().addFirst(new Car(0, lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
     }
