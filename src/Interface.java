@@ -1,3 +1,4 @@
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import g4p_controls.*;
 import processing.core.PApplet;
 
@@ -123,6 +124,18 @@ public class Interface {
                 }
             }
             if (Model.getParametersCounter() == Model.getParametersNumber()) {
+                if (answerNumber[0] > answerNumber[1]){
+                    JOptionPane.showMessageDialog(null, "Минимальное значение скорости должно быть меньше или равно максимальному", "", JOptionPane.ERROR_MESSAGE);
+                    textField[0].setText("");
+                    textField[1].setText("");
+                    return;
+                }
+                if (answerNumber[2] > answerNumber[3]){
+                    JOptionPane.showMessageDialog(null, "Минимальное значение интервала появления должно быть меньше или равно максимальному", "", JOptionPane.ERROR_MESSAGE);
+                    textField[2].setText("");
+                    textField[3].setText("");
+                    return;
+                }
                 Model.setMinSpeed(answerNumber[0]);
                 Model.setMaxSpeed(answerNumber[1]);
                 Model.setMinInterval(answerNumber[2]);
