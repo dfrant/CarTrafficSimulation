@@ -78,7 +78,7 @@ public class Model extends PApplet {
             carList = manager.getCarsList();
             if (intervalCounter <= 0 && (carList.isEmpty() || carList.getLast().getCoordX() + carList.getLast().getLength() - interf.getPnlWidth() > 3 * carList.getLast().getLength())) {
                 if (!carList.isEmpty()) {
-                   carList.add(new Car(carList.size(), lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
+                    carList.add(new Car(carList.size(), lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
                 } else {
                     carList.add(new Car(0, lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
                 }

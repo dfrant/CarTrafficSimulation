@@ -36,7 +36,7 @@ public class Interface {
         pnlHeight = obj.height;
         gapX = 10;
         gapY = 45;
-        elemWidth = pnlWidth - 2*gapX;
+        elemWidth = pnlWidth - 2 * gapX;
         elemHeight = 20;
 
         roadX = pnlWidth;
@@ -83,7 +83,7 @@ public class Interface {
         pnlInfo.setCollapsible(false);
         pnlInfo.setDraggable(false);
 
-        pnlRule = new GPanel(obj, pnlWidth + pnlInfoWidth + 2*gapX, 0, pnlInfoWidth, pnlInfoHeight, "правила симуляции");
+        pnlRule = new GPanel(obj, pnlWidth + pnlInfoWidth + 2 * gapX, 0, pnlInfoWidth, pnlInfoHeight, "правила симуляции");
         pnlRule.setCollapsible(false);
         pnlRule.setDraggable(false);
 
@@ -99,8 +99,8 @@ public class Interface {
 
     public void buttonHandler(GButton button, GEvent event) { //reacts to pressing certain buttons
         if (button == btnStart && event == GEvent.CLICKED) {
-                String answer;
-                int[] answerNumber = new int[textField.length];
+            String answer;
+            int[] answerNumber = new int[textField.length];
             if (!Model.isStart()) {
                 Model.setParametersCounter(0);
                 for (int j = 0; j < textField.length; j++) {
@@ -149,7 +149,7 @@ public class Interface {
                     Model.setStart(true);
                     Model.setTime(0);
                 }
-            }else{
+            } else {
                 for (GTextField gTextField : textField) {
                     gTextField.setTextEditEnabled(true);
                     gTextField.setText(" ");
@@ -167,7 +167,7 @@ public class Interface {
                 btnStart.setEnabled(false);
                 Model.setStart(false);
                 Model.setPause(true);
-            }else{
+            } else {
                 btnStart.setEnabled(true);
                 Model.setStart(true);
                 Model.setPause(false);
@@ -180,26 +180,28 @@ public class Interface {
         }
     }
 
-    public void drawCar(PApplet obj, Car car){ //displays a car as a rectangle with given color
+    public void drawCar(PApplet obj, Car car) { //displays a car as a rectangle with given color
         obj.fill(car.getColor().getRGB());
         obj.rect(car.getCoordX(), car.getCoordY(), car.getLength(), car.getHeight());
         obj.fill(0); //black color
         obj.text(car.getId(), car.getCoordX() + car.getLength() / 2, car.getCoordY() + car.getLength() / 2);
         obj.fill(255); //white color
         obj.text(roundSpeedValueToString(car.getCurrentSpeed()), car.getCoordX(), car.getCoordY() - car.getLength() / 2, car.getCoordX(), car.getCoordY() + car.getHeight() / 2);
-        if (car.isInDelay()){
+        if (car.isInDelay()) {
             obj.fill(255); //white color
             double time = Math.ceil(car.getActualTimeReducingSpeed());
             if (time > 0) {
                 obj.text(String.valueOf(time), car.getCoordX(), car.getCoordY() + car.getLength(), car.getCoordX(), car.getCoordY() + car.getHeight() / 2);
-            }else{
+            } else {
                 obj.text(String.valueOf(0), car.getCoordX(), car.getCoordY() + car.getLength(), car.getCoordX(), car.getCoordY() + car.getHeight() / 2);
             }
         }
     }
-    private String roundSpeedValueToString(float speed){
+
+    private String roundSpeedValueToString(float speed) {
         return String.valueOf(Math.round(speed * 100.0) / 100.0);
     }
+
     public void drawRoad(PApplet obj, float lengthCar) { //displays the road
         obj.background(backgroundColor);
         obj.fill(roadColor);
