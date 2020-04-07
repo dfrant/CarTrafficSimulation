@@ -2,7 +2,7 @@ import java.util.LinkedList;
 
 public class Manager {
     private LinkedList<Car> cars = new LinkedList<Car>();
-    private float brakeLow = -200;
+    private float brakeLow = -100;
 
     public LinkedList<Car> getCarsList() {
         return cars;

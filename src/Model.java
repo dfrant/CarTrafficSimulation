@@ -1,5 +1,6 @@
 import processing.core.PApplet;
 
+import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Model extends PApplet {
@@ -26,6 +27,7 @@ public class Model extends PApplet {
     private static int parametersCounter = 0;
 
     private static boolean start = false;
+    private static boolean pause = false;
 
     public void settings() {
         size(windowWidth, windowHeight);
@@ -37,14 +39,16 @@ public class Model extends PApplet {
     }
 
     public void draw() { //runs in a loop - the main cycle of simulation
-        if (start) {
+        if (!isPause())
             interf.drawRoad(this, lengthCar);
+        if (start) {
             if (time == 0)
                 dt = time / 1000;
             else
                 dt = (millis() - time) / 1000;
-            if (!manager.getCarsList().isEmpty()) {
-                for (int i = 0; i < manager.getCarsList().size(); i++) {
+            LinkedList<Car> carList = manager.getCarsList();
+            if (!carList.isEmpty()) {
+                for (int i = 0; i < carList.size(); i++) {
                     Car currentCar = manager.getCar(i);
                     manager.updateSpeeds(i - 1, i, dt);
                     currentCar.check(this.mousePressed, this.mouseX, this.mouseY, valueReducingSpeed, timeReducingSpeed);
@@ -71,11 +75,12 @@ public class Model extends PApplet {
                     }
                 }
             }
-            if (intervalCounter <= 0 && (manager.getCarsList().isEmpty() || manager.getCarsList().getLast().getCoordX() + manager.getCarsList().getLast().getLength() - interf.getPnlWidth() > 3 * manager.getCarsList().getLast().getLength())) {
-                if (!manager.getCarsList().isEmpty()) {
-                    manager.getCarsList().add(new Car(manager.getCarsList().size(), lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
+            carList = manager.getCarsList();
+            if (intervalCounter <= 0 && (carList.isEmpty() || carList.getLast().getCoordX() + carList.getLast().getLength() - interf.getPnlWidth() > 3 * carList.getLast().getLength())) {
+                if (!carList.isEmpty()) {
+                   carList.add(new Car(carList.size(), lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
                 } else {
-                    manager.getCarsList().add(new Car(0, lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
+                    carList.add(new Car(0, lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
                 }
                 intervalCounter = getRnd(minInterval, maxInterval);
             }
@@ -93,14 +98,16 @@ public class Model extends PApplet {
     }
 
     public static void deleteCars() {
-        while (!manager.getCarsList().isEmpty()) {
-            manager.getCarsList().removeLast();
+        LinkedList<Car> carList = manager.getCarsList();
+        while (!carList.isEmpty()) {
+            carList.removeLast();
         }
     }
 
     public static void addFirstCar() {
+        LinkedList<Car> carList = manager.getCarsList();
         intervalCounter = getRnd(minInterval, maxInterval);
-        manager.getCarsList().addFirst(new Car(0, lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
+        carList.addFirst(new Car(0, lengthCar, heightCar, interf.getPnlWidth() - lengthCar, interf.getRoadY() + heightCar / 2, getRnd(minSpeed, maxSpeed)));
     }
 
     public static void setMinSpeed(int minSpeed) {
@@ -147,7 +154,19 @@ public class Model extends PApplet {
         Model.start = start;
     }
 
+    public static boolean isStart() {
+        return start;
+    }
+
     public static void setTime(float time) {
         Model.time = time;
+    }
+
+    public static boolean isPause() {
+        return pause;
+    }
+
+    public static void setPause(boolean pause) {
+        Model.pause = pause;
     }
 }

@@ -95,7 +95,8 @@ public class Car {
     }
 
     private void shiftCarForward(float dt) {
-        setCoordX(getCoordX() + getCurrentSpeed() * dt + getAcceleration() * dt * dt / 2);
+        float px = (float)3.7938105; //pixels in one mm
+        setCoordX(getCoordX() + (getCurrentSpeed() * dt + getAcceleration() * dt * dt / 2) * px);
     }
     //getters and setters
 
